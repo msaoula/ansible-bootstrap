@@ -1,0 +1,29 @@
+---
+- name: Add deploy user
+  user: 
+    name: "{{ deploy_user }}"
+    shell: /bin/bash
+
+- name: Add authorized deploy key
+  authorized_key: 
+    user: "{{ deploy_user }}" 
+    key: "{{ deploy_key }}"
+
+- name: Add deploy user to sudoers
+  lineinfile: 
+    dest: /etc/sudoers 
+    regexp: "{{ deploy_user }} ALL" 
+    line: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL" 
+    state: present
+
+- name: Remove sudo group rights
+  lineinfile: 
+    dest: /etc/sudoers 
+    regexp: "^%sudo" 
+    state: absent
+
+- name: Remove admin group rights
+  lineinfile: 
+    dest: /etc/sudoers 
+    regexp: "^%admin" 
+    state: absent
